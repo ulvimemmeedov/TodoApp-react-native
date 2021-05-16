@@ -3,7 +3,7 @@ react native expo todo app
 ### install
 # windows
 npm install --global expo-cli
-# linux/ubuntu/debia
+# linux/ubuntu/debian
 sudo npm install --global expo-cli
 # git
 git clone https://github.com/ulvimemmeedov/TodoApp-react-native.git
