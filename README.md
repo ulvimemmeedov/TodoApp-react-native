@@ -1,6 +1,6 @@
 # TodoApp-react-native
 react native expo todo app
-# install
+### install
 # windows
 npm install --global expo-cli
 # linux/ubuntu/debia
