@@ -1,48 +1,79 @@
-import { StatusBar } from 'expo-status-bar';
 import React , {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
- 
+import {StatusBar} from 'expo-status-bar'
+import { StyleSheet, Text, View, TextInput, Button, ImageBackground } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function App() {
- 
+  const [cancel, setCancel] = useState(false);
   const [newTask, setnewTask] = useState('');
- 
   const [appTasks, appTask] = useState([]);
- 
   const taskInputHandler = (enteredText) => {
     setnewTask(enteredText);
   };
- 
-  const addTaskHandler = () =>{
-    appTask(currentTask => [...currentTask, newTask]);
-    console.log(newTask);
+  const getStorageData = async () => {
+    try {
+      if ((await AsyncStorage.getItem('localData')) != undefined || (await AsyncStorage.getItem('localData')) != null) {
+        appTask(JSON.parse(await AsyncStorage.getItem('localData')));
+        setCancel(true);
+      };
+    }
+    catch (error) {
+        alert(error);
+    };
   };
- 
+  if (!cancel) {
+    getStorageData();
+  };
+  const addTaskHandler = async () =>{
+    if(newTask.length){
+      appTask(currentTask => [...currentTask, newTask]);
+      await AsyncStorage.setItem('localData' ,JSON.stringify(appTasks));
+      setnewTask('');
+    };
+  };
+  const ClearAll = async () =>{
+    appTask([]);
+    await AsyncStorage.removeItem('localData');
+  };
   return (
     <View style= {styles.container}>
+      <StatusBar/>
       <View style = {styles.inputContainer}>
-      <Text h1 style={styles.heading}>To Do App</Text>
+      <Text style={styles.heading}> To Do </Text>
       </View>
       <View style = {styles.inputContainer}>
-       
         <TextInput
-          placeholder = "Task List"
+          placeholder = "To Do List"
           style = {styles.input}
           onChangeText = {taskInputHandler}
           value = {newTask}
         />
-       
         <Button title = "+"
           onPress = {addTaskHandler}
         /> 
       </View>
       <View>
-        {appTasks.map((task) => <Text>{task}</Text>)}
+        {appTasks.length ? appTasks.map((task,index) => <Text key={index} >{task}</Text>) : <Text>To Do Yoxdur</Text>}
+      </View>
+      <View style={styles.button} >
+      {appTasks.length ? <Button
+      
+      title = "Clear All"
+          onPress = {ClearAll}
+        />  :<Text></Text> }
       </View>
     </View>
   );
-}
- 
+};
 const styles = StyleSheet.create({
+  button:{
+    top:10,
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center"
+  },
   heading:{
     justifyContent:'center',
     flexDirection:'row'
@@ -51,18 +82,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   input :{
     borderColor:"black", 
-    borderWidth:1 , 
-    padding :20,
-     
+    borderWidth:1,
+    padding :10,
+    width:300
   },
   inputContainer :{
     flexDirection :'row', 
     justifyContent :'space-between', 
     alignContent:'center',
-    bottom:20
-  },
+    
+  }
 });
